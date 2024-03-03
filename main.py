@@ -1,5 +1,11 @@
 import utils
+import math
 import numpy as np
+import bisect
+
+
+def lerp(x0, y0, x1, y1, x):
+    return y0 + (x-x0)*(y1-y0)/(x1-x0)
 
 
 def monthly_heat_index(average_temperature_celsius):
@@ -18,8 +24,16 @@ def ept_correction(ept_unadjust, sunshine_hours, monthly_days):
     return ept_unadjust * (sunshine_hours/12)*(monthly_days/30)
 
 
-def tmi(ept_adjusted, precipitation,):
+def thornthwaite_moisture_index(ept_adjusted, precipitation,):
     return 75 * (precipitation / ept_adjusted - 1) + 10
+
+
+def matric_suction_plastic(a, b, y, s, tmi):
+    return a ** (math.e ** (b / (tmi+y)) + s)
+
+
+def matric_suction_no_plastic(a, b, y, tmi):
+    return a + math.e ** (b+y*(tmi+101))
 
 
 def third_degree_polynomial(anual_temp):
@@ -29,6 +43,10 @@ def third_degree_polynomial(anual_temp):
     d = 0.49239
 
     return a - b + c + d
+
+
+def adjust_factor(hm, hr):
+    return (1 - (np.log(1 + (hm / hr)) / (np.log(1 + (10 ** 6 / hr)))))
 
 
 SIEVES_SIZES_IN_MM = {
@@ -65,6 +83,28 @@ sieves_passing = {
     "No200": 8.50
 }
 
+
+def sorround_num_keys(keys, value):
+    sorted_keys = sorted(keys)
+    index = bisect.bisect_right(sorted_keys, value)
+    key_before = sorted_keys[index-1]
+    key_after = sorted_keys[index]
+
+    return (key_before, key_after)
+
+
+TMI_PLASTIC = {
+    0: {'a': 3.649, 'b': 3.338, 'y': -0.05046},
+    2: {'a': 4.196, 'b': 2.741, 'y': -0.03824},
+    4: {'a': 5.285, 'b': 3.473, 'y': -0.04004},
+    6: {'a': 6.877, 'b': 4.402, 'y': -0.03726},
+    8: {'a': 8.621, 'b': 5.379, 'y': -0.03836},
+    10: {'a': 12.180, 'b': 6.646, 'y': -0.04688},
+    12: {'a': 15.590, 'b': 7.599, 'y': -0.04904},
+    14: {'a': 20.202, 'b': 8.154, 'y': -0.05164},
+    16: {'a': 23.564, 'b': 8.283, 'y': -0.05218}
+}
+
 specific_gravity = 2.611
 plasticity_index = 7.12
 california_bearing_ratio = 100
@@ -92,7 +132,36 @@ anual_3rd_polynomial = third_degree_polynomial(anual_heat)
 ept_unadjust = ept_without_correction(
     temp_celsius, anual_heat, anual_3rd_polynomial)
 ept_adjusted = ept_correction(ept_unadjust, sunshine_hours, monthy_days)
-print(tmi(ept_adjusted, precipitation_mm))
+ept_adjusted = np.append(ept_adjusted, np.sum(ept_adjusted))
+precipitation_mm = np.append(precipitation_mm, np.sum(precipitation_mm))
+tmi = thornthwaite_moisture_index(ept_adjusted, precipitation_mm)
+
+p_middle = sieves_passing['No200']
+
+(p_before, p_after) = sorround_num_keys(
+    TMI_PLASTIC.keys(), p_middle)
+
+a_before = TMI_PLASTIC[p_before]['a']
+a_after = TMI_PLASTIC[p_after]['a']
+
+a = lerp(int(p_before), a_before, int(p_after), a_after, p_middle)
+
+b_before = TMI_PLASTIC[p_before]['b']
+b_after = TMI_PLASTIC[p_after]['b']
+
+b = lerp(int(p_before), b_before, int(p_after), b_after, p_middle)
+
+y_before = TMI_PLASTIC[p_before]['y']
+y_after = TMI_PLASTIC[p_after]['y']
+
+y = lerp(int(p_before), y_before, int(p_after), y_after, p_middle)
+
+hm = matric_suction_no_plastic(a, b, y, tmi)
+
+# SWCC parameter
+hr = 100
+
+ch = adjust_factor(hm, hr)
 
 assert (
     len(SIEVES_SIZES_IN_MM) == len(sieves_passing)
