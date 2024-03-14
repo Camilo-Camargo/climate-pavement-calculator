@@ -8,6 +8,77 @@ def lerp(x0, y0, x1, y1, x):
     return y0 + (x-x0)*(y1-y0)/(x1-x0)
 
 
+def ambient_factor(a3, b3, km, s, sopt):
+    return 10 ** (
+        a3 + (b3 - a3) / (1 + np.exp(np.log(-b3 / a3) + km * (s - sopt)))
+    )
+
+
+def tetha_opt(wopt, pdmax):
+    return ((wopt / 100) * pdmax)/1000
+
+
+def c_swcc(m2, bf):
+    return math.log10(m2**1.15) - (1 - (1 / bf))
+
+
+def cf_swcc(c, d10):
+    return 0.26 * math.exp(0.758 * c) + 1.4 * d10
+
+
+def bf_swcc(b):
+    if 0.936 * b - 3.8 < 0.3:
+        return 0.3
+    elif 0.936 * b - 3.8 >= 4:
+        return 4
+    else:
+        return 0.936 * b - 3.8
+
+
+def af_swcc(a, p200):
+    if (1.14 * a - 0.5) < 0:
+        return 1
+    elif (1.14 * a - 0.5) > 0 and (1.14 * a - 0.5) < 1:
+        return 2.25 * p200**0.5 + 5
+    else:
+        return 1.14 * a - 0.5
+
+
+def b_swcc(p200, d90, d10, d0, m1):
+    return (5.39 - 0.29 * math.log(
+        p200 * (d90 / d10)
+    ) + 3 * d0**0.57 + 0.021 * p200**1.19) * m1**0.1
+
+
+def a_swcc(d20, p200, d30, d100):
+    return -2.79 - 14.1 * math.log10(d20) - 1.9 * 10**-6 *\
+        p200**4.34 + 7 * math.log10(d30) + 0.055 * d100
+
+
+def d_100(m1, d60):
+    return 10 ** ((40/m1) + math.log10(d60))
+
+
+def d_0(m2, d30):
+    return 10 ** ((-30/m2) + math.log10(d30))
+
+
+def m_1(d90, d60):
+    return 30 / (math.log10(d90) - math.log10(d60))
+
+
+def m_2(d30, d10):
+    return 20 / (math.log10(d30) - math.log10(d10))
+
+
+def volumetry_humedity_saturated(pdmax, gs):
+    return 1 - pdmax / (1000*gs)
+
+
+def volumetry_humedity(ch, osat, hm, af, bf, cf):
+    return ch * (osat/(np.log(np.exp(1) + (hm/af) ** bf)**cf))
+
+
 def monthly_heat_index(average_temperature_celsius):
     return (average_temperature_celsius/5) ** 1.514
 
@@ -160,9 +231,46 @@ hm = matric_suction_no_plastic(a, b, y, tmi)
 
 # SWCC parameter
 hr = 100
+d90 = PARTICLE_SIZE_PASSING_PERCENT['D90']
+d60 = PARTICLE_SIZE_PASSING_PERCENT['D60']
+d20 = PARTICLE_SIZE_PASSING_PERCENT['D20']
+d30 = PARTICLE_SIZE_PASSING_PERCENT['D30']
+d10 = PARTICLE_SIZE_PASSING_PERCENT['D10']
+p200 = sieves_passing['No200']
+m1 = m_1(d90, d60)
+d100 = d_100(m1, d60)
+a2 = a_swcc(d20, p200, d30, d100)
+af = af_swcc(a2, p200)
+
+
+m2 = m_2(d30, d10)
+d0 = d_0(m2, d30)
+b = b_swcc(p200, d90, d10, d0, m1)
+bf = bf_swcc(b)
+
+c = c_swcc(m2, bf)
+cf = cf_swcc(c, d10)
 
 ch = adjust_factor(hm, hr)
 
-assert (
-    len(SIEVES_SIZES_IN_MM) == len(sieves_passing)
-), "Missing sieves passing elements."
+osat = volumetry_humedity_saturated(maximum_dry_density, specific_gravity)
+ow = volumetry_humedity(ch, osat, hm, af, bf, cf)
+
+s = ow / osat
+
+a3 = -0.3123
+b3 = 0.3
+km = 6.8157
+
+tetha_opt = tetha_opt(optimum_moisture_content, maximum_dry_density)
+sopt = tetha_opt / osat
+
+famb = ambient_factor(a3, b3, km, s, sopt)
+cbr = famb * california_bearing_ratio
+
+print(cbr)
+
+
+# assert (
+#    len(SIEVES_SIZES_IN_MM) == len(sieves_passing)
+# ), "Missing sieves passing elements."
