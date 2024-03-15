@@ -1,20 +1,38 @@
-# Roadway Calculator
+# Climate Pavement Calculator
 
 ## Getting started
-To gettting started you must install first the requirements using
+
+## Core
+To gettting started go to core
+
+```
+cd core
+```
+
+then, you must install first the requirements using
 
 ```
 pip install -r requirement.txt
 ```
 
-then run the main program
+and then run the api
 
 ```
-python main.py
+uvicorn api:app
 ```
 
-or if you have `make` program use the `Makefile`
+## Web
+
+To getting started go to web
 
 ```
-make
+cd web
 ```
+
+then, you must install the depedencies with your favorite dependency manager.
+
+`yarn install`
+
+and then run the remix project
+
+`yarn run dev`
