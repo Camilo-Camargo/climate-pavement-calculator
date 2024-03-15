@@ -1,2 +1,2 @@
 run:
-	python main.py
+	python climate_pavement_test.py

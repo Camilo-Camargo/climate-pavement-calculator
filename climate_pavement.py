@@ -4,14 +4,14 @@ from constant import (PARTICLE_SIZE_PASSING_PERCENT,
                       TMI_PLASTIC, TMI_NO_PLASTIC)
 
 
-def climate_in_pavement_validation(mode, common_data, data):
-    if mode != 'thin' and mode != 'thick':
+def climate_pavement_validation(data):
+    if data['mode'] != 'thin' and data['mode'] != 'thick':
         raise Exception("Invalid mode. Mode must be 'thin' or 'thick'.")
 
-    if "precipitation_mm" not in common_data:
+    if "precipitation_mm" not in data:
         raise Exception("You must provide precipitation in mm")
 
-    if "temp_celsius" not in common_data:
+    if "temp_celsius" not in data:
         raise Exception("You must provide temperature in celsius")
 
     if "specific_gravity" not in data:
@@ -33,11 +33,13 @@ def climate_in_pavement_validation(mode, common_data, data):
         raise Exception("You must provide p200")
 
 
-def climate_in_pavements(mode, common_data, data):
-    climate_in_pavement_validation(mode, common_data, data)
+def climate_pavements(data):
+    climate_pavement_validation(data)
 
-    precipitation_mm = common_data["precipitation_mm"]
-    temp_celsius = common_data["temp_celsius"]
+    mode = data['mode']
+
+    precipitation_mm = np.array(data["precipitation_mm"])
+    temp_celsius = np.array(data["temp_celsius"])
 
     specific_gravity = data['specific_gravity']
     plasticity_index = data['plasticity_index']
@@ -195,4 +197,14 @@ def climate_in_pavements(mode, common_data, data):
     famb = utils.ambient_factor(a3, b3, km, s, sopt)
     cbr = famb * california_bearing_ratio
 
-    return (famb, cbr)
+    return {
+        "ept_unadjust": ept_unadjust.tolist(),
+        "ept_adjusted": ept_adjusted.tolist(),
+        "tmi": tmi.tolist(),
+        "hm": hm.tolist(),
+        "ch": ch.tolist(),
+        "ow": ow.tolist(),
+        "s": s.tolist(),
+        "famb": famb.tolist(),
+        "cbr": cbr.tolist()
+    }
