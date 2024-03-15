@@ -1,5 +1,6 @@
 import math
 import numpy as np
+import bisect
 
 
 def is_leap_year(year: int):
@@ -151,3 +152,12 @@ def third_degree_polynomial(anual_temp):
 
 def adjust_factor(hm, hr):
     return (1 - (np.log(1 + (hm / hr)) / (np.log(1 + (10 ** 6 / hr)))))
+
+
+def sorround_num_keys(keys, value):
+    sorted_keys = sorted(keys)
+    index = bisect.bisect_right(sorted_keys, value)
+    key_before = sorted_keys[index-1]
+    key_after = sorted_keys[index]
+
+    return (key_before, key_after)

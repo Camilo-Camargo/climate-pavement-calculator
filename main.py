@@ -1,97 +1,7 @@
 import utils
 import numpy as np
-import bisect
-
-SIEVES_SIZES_IN_MM = {
-    "2": 50.8,
-    "1-1/2": 38.1,
-    "1": 25.4,
-    "3/4": 19.1,
-    "1/2": 12.5,
-    "3/8": 9.52,
-    "No4": 4.75,
-    "No10": 2,
-    "No40": 0.45,
-    "No200": 0.075,
-}
-
-PARTICLE_SIZE_PASSING_PERCENT = {
-    "D90": 22.383,
-    "D60": 6.225,
-    "D30": 0.628,
-    "D20": 0.219,
-    "D10": 0.086,
-}
-
-sieves_passing = {
-    "2": 100,
-    "1-1/2": 98.3,
-    "1": 92.8,
-    "3/4": 85.1,
-    "1/2": 77.1,
-    "3/8": 69.9,
-    "No4": 53.7,
-    "No10": 38.6,
-    "No40": 27.1,
-    "No200": 8.50
-}
-
-
-def sorround_num_keys(keys, value):
-    sorted_keys = sorted(keys)
-    index = bisect.bisect_right(sorted_keys, value)
-    key_before = sorted_keys[index-1]
-    key_after = sorted_keys[index]
-
-    return (key_before, key_after)
-
-
-TMI_PLASTIC = {
-    0: {'a': 3.649, 'b': 3.338, 'y': -0.05046},
-    2: {'a': 4.196, 'b': 2.741, 'y': -0.03824},
-    4: {'a': 5.285, 'b': 3.473, 'y': -0.04004},
-    6: {'a': 6.877, 'b': 4.402, 'y': -0.03726},
-    8: {'a': 8.621, 'b': 5.379, 'y': -0.03836},
-    10: {'a': 12.180, 'b': 6.646, 'y': -0.04688},
-    12: {'a': 15.590, 'b': 7.599, 'y': -0.04904},
-    14: {'a': 20.202, 'b': 8.154, 'y': -0.05164},
-    16: {'a': 23.564, 'b': 8.283, 'y': -0.05218}
-}
-
-TMI_NO_PLASTIC = {
-    0: {"a": 0.3, "b": 419.07, "y": 133.5, "s": 15},
-    1: {"a": 0.3, "b": 521.5, "y": 137.3, "s": 16},
-    2: {"a": 0.3, "b": 521.5, "y": 137.3, "s": 16},
-    3: {"a": 0.3, "b": 663.5, "y": 142.5, "s": 17.5},
-    4: {"a": 0.3, "b": 801, "y": 147.6, "s": 25},
-    5: {"a": 0.3, "b": 975, "y": 152.5, "s": 32},
-    6: {"a": 0.3, "b": 1171.2, "y": 157.5, "s": 27.8}
-}
-
-
-mode = 'thin'  # or thick
-
-# Thick
-specific_gravity = 2.611  # gs
-plasticity_index = 7.12  # ip
-california_bearing_ratio = 100  # cbr
-maximum_dry_density = 2024  # pdmax
-optimum_moisture_content = 8.500  # wopt
-
-# Thin
-specific_gravity = 2.736  # gs
-plasticity_index = 19  # ip
-california_bearing_ratio = 30  # cbr
-maximum_dry_density = 1240  # pdmax
-optimum_moisture_content = 38  # wopt
-thin_n200 = 58
-
-if mode == 'thin':
-    p200 = thin_n200
-    wpi = (p200 / 100) * plasticity_index
-else:
-    p200 = sieves_passing['No200']
-
+from constant import (PARTICLE_SIZE_PASSING_PERCENT,
+                      TMI_PLASTIC, TMI_NO_PLASTIC)
 
 precipitation_mm = np.array(
     [19.03, 21.51, 70.85, 81.81, 87.84, 44.50,
@@ -105,6 +15,41 @@ temp_celsius = np.array(
 sunshine_hours = np.array([11.70, 11.80, 12.00, 12.10, 12.31,
                            12.30, 12.30, 12.20, 12.00, 11.90, 11.69, 11.70])
 
+mode = 'thin'
+
+if mode == 'thin':
+    specific_gravity = 2.736  # gs
+    plasticity_index = 19  # ip
+    california_bearing_ratio = 30  # cbr
+    maximum_dry_density = 1240  # pdmax
+    optimum_moisture_content = 38  # wopt
+    thin_n200 = 58
+else:
+    specific_gravity = 2.611  # gs
+    plasticity_index = 7.12  # ip
+    california_bearing_ratio = 100  # cbr
+    maximum_dry_density = 2024  # pdmax
+    optimum_moisture_content = 8.500  # wopt
+    sieves_passing = {
+        "2": 100,
+        "1-1/2": 98.3,
+        "1": 92.8,
+        "3/4": 85.1,
+        "1/2": 77.1,
+        "3/8": 69.9,
+        "No4": 53.7,
+        "No10": 38.6,
+        "No40": 27.1,
+        "No200": 8.50
+    }
+
+if mode == 'thin':
+    p200 = thin_n200
+    wpi = (p200 / 100) * plasticity_index
+else:
+    p200 = sieves_passing['No200']
+
+
 monthy_days = np.array(utils.number_of_day_per_month(2023))
 monthly_heat = utils.monthly_heat_index(temp_celsius)
 
@@ -117,7 +62,6 @@ ept_adjusted = utils.ept_correction(ept_unadjust, sunshine_hours, monthy_days)
 ept_adjusted = np.append(ept_adjusted, np.sum(ept_adjusted))
 precipitation_mm = np.append(precipitation_mm, np.sum(precipitation_mm))
 tmi = utils.thornthwaite_moisture_index(ept_adjusted, precipitation_mm)
-
 
 if mode == 'thin':
     a = 0.3
@@ -145,7 +89,7 @@ if mode == 'thin':
         tmi_table = [5, 10, 20]
 
         p_middle = wpi
-        (p_before, p_after) = sorround_num_keys(
+        (p_before, p_after) = utils.sorround_num_keys(
             tmi_table, p_middle)
 
         p_before_i = tmi_table.index(p_before) + 3
@@ -168,9 +112,12 @@ if mode == 'thin':
 
         y = utils.lerp(int(p_before), y_before,
                        int(p_after), y_after, p_middle)
+
+        hm = utils.matric_suction_plastic(a, b, y, s, tmi)
+        hr = 500
 else:
     p_middle = p200
-    (p_before, p_after) = sorround_num_keys(
+    (p_before, p_after) = utils.sorround_num_keys(
         TMI_PLASTIC.keys(), p_middle)
 
     a_before = TMI_PLASTIC[p_before]['a']
@@ -188,20 +135,10 @@ else:
 
     y = utils.lerp(int(p_before), y_before, int(p_after), y_after, p_middle)
 
-print(a, b, y, s, tmi)
-
-if mode == 'thin':
-    hm = utils.matric_suction_plastic(a, b, y, s, tmi)
-else:
     hm = utils.matric_suction_no_plastic(a, b, y, tmi)
-
-# SWCC parameter
-
-if mode == 'thin':
-    hr = 500
-else:
     hr = 100
 
+# SWCC parameter
 ch = utils.adjust_factor(hm, hr)
 
 if mode == 'thin':
@@ -250,3 +187,5 @@ sopt = tetha_opt / osat
 
 famb = utils.ambient_factor(a3, b3, km, s, sopt)
 cbr = famb * california_bearing_ratio
+
+print(cbr)
