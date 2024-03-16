@@ -36,3 +36,7 @@ then, you must install the depedencies with your favorite dependency manager.
 and then run the remix project
 
 `yarn run dev`
+
+
+## Production
+In production you must copy the build of `web-spa` to static folder in `core`.

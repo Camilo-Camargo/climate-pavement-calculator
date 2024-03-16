@@ -1,6 +1,5 @@
-import { json } from '@remix-run/node'
-import type { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
-import { useFetcher } from "@remix-run/react";
+import type { MetaFunction } from "@remix-run/node";
+import { json, ClientActionFunctionArgs, useFetcher } from "@remix-run/react";
 import { useState } from 'react';
 import { apiPost } from "~/services/api";
 
@@ -32,7 +31,7 @@ const MONTHS: string[] = [
 
 const SIEVES_SIZING = ["2\"", "1-1/2\"", "1\"", "3/4\"", "1/2\"", "3/8\"", "No. 4", "No. 10", "No. 40"];
 
-export async function action({ request }: ActionFunctionArgs) {
+export async function clientAction({ request }: ClientActionFunctionArgs) {
   const formData = await request.formData();
   const data = Object.fromEntries(formData) as any;
 
@@ -89,7 +88,7 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function Route() {
-  const fetcher = useFetcher<typeof action>();
+  const fetcher = useFetcher<typeof clientAction>();
   const [mode, setMode] = useState<string>('thin');
 
   const isError = fetcher?.data?.error;
