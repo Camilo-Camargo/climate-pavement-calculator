@@ -1,12 +1,18 @@
 import utils
 import numpy as np
-from constant import (PARTICLE_SIZE_PASSING_PERCENT,
-                      TMI_PLASTIC, TMI_NO_PLASTIC)
+from constant import (
+    TMI_PLASTIC, TMI_NO_PLASTIC,
+    SIEVES_SIZES_IN_MM
+)
 
 
 def climate_pavement_validation(data):
     if data['mode'] != 'thin' and data['mode'] != 'thick':
         raise Exception("Invalid mode. Mode must be 'thin' or 'thick'.")
+
+    if data['mode'] == 'thick':
+        if 'sieves_passing' not in data:
+            raise Exception("You must provide sieves passing for thick mode")
 
     if "precipitation_mm" not in data:
         raise Exception("You must provide precipitation in mm")
@@ -50,6 +56,8 @@ def climate_pavements(data):
 
     if mode == 'thin':
         wpi = (p200 / 100) * plasticity_index
+    else:
+        sieves_passing = data['sieves_passing']
 
     # TODO: Add latitude and longitude interpolation
     sunshine_hours = np.array(
@@ -157,11 +165,41 @@ def climate_pavements(data):
         bf = utils.bf_swcc_thin(wpi)
         cf = utils.cf_swcc_thin(wpi)
     else:
-        d90 = PARTICLE_SIZE_PASSING_PERCENT['D90']
-        d60 = PARTICLE_SIZE_PASSING_PERCENT['D60']
-        d20 = PARTICLE_SIZE_PASSING_PERCENT['D20']
-        d30 = PARTICLE_SIZE_PASSING_PERCENT['D30']
-        d10 = PARTICLE_SIZE_PASSING_PERCENT['D10']
+        d90 = utils.d_generator(
+            SIEVES_SIZES_IN_MM[2],
+            SIEVES_SIZES_IN_MM[4],
+            sieves_passing[2],
+            sieves_passing[4],
+            90
+        )
+        d60 = utils.d_generator(
+            SIEVES_SIZES_IN_MM[5],
+            SIEVES_SIZES_IN_MM[6],
+            sieves_passing[5],
+            sieves_passing[6],
+            60
+        )
+        d20 = utils.d_generator(
+            SIEVES_SIZES_IN_MM[8],
+            SIEVES_SIZES_IN_MM[9],
+            sieves_passing[8],
+            p200,
+            20
+        )
+        d30 = utils.d_generator(
+            SIEVES_SIZES_IN_MM[7],
+            SIEVES_SIZES_IN_MM[8],
+            sieves_passing[7],
+            sieves_passing[8],
+            30
+        )
+        d10 = utils.d_generator(
+            SIEVES_SIZES_IN_MM[8],
+            SIEVES_SIZES_IN_MM[9],
+            sieves_passing[8],
+            p200,
+            10
+        )
         m1 = utils.m_1(d90, d60)
         d100 = utils.d_100(m1, d60)
         a2 = utils.a_swcc(d20, p200, d30, d100)

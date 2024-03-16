@@ -3,6 +3,10 @@ import numpy as np
 import bisect
 
 
+def d_generator(a, b, c, d, e):
+    return 10 ** (math.log10(a) - ((math.log10(a) - math.log10(b)) * (c - e)) / (c - d))
+
+
 def is_leap_year(year: int):
     return year % 4 == 0 or year % 100 == 0 and year % 400 == 0
 

@@ -40,6 +40,7 @@ thick_data = {
     'california_bearing_ratio': 100,
     'maximum_dry_density': 2024,
     'optimum_moisture_content': 8.500,
+    'sieves_passing': [100, 98.3, 92.8, 85.1, 77.1, 69.9, 53.7, 38.6, 27.1],
     'p200': 8.50
 }
 

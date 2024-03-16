@@ -1,6 +1,7 @@
 import { json } from '@remix-run/node'
 import type { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
+import { useState } from 'react';
 import { apiPost } from "~/services/api";
 
 
@@ -13,6 +14,7 @@ type ClimatePavimentReqDTO = {
   california_bearing_ratio: number;
   maximum_dry_density: number;
   optimum_moisture_content: number;
+  sieves_passing?: number[];
   p200: number;
 };
 
@@ -28,24 +30,30 @@ const MONTHS: string[] = [
   "July", "August", "September", "October", "November", "December"
 ];
 
+const SIEVES_SIZING = ["2\"", "1-1/2\"", "1\"", "3/4\"", "1/2\"", "3/8\"", "No. 4", "No. 10", "No. 40"];
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const data = Object.fromEntries(formData) as any;
 
-  const ps = MONTHS.map((_, i) => {
-    const index = `p${i}`;
-    return parseFloat(data[index])
+  const pres = MONTHS.map((_, i) => {
+    const index = `pre${i}`;
+    return data[index]
   })
 
   const ts = MONTHS.map((_, i) => {
     const index = `t${i}`;
-    return parseFloat(data[index])
+    return data[index]
   })
+
+  const sievePassing = SIEVES_SIZING.map((_, i) => {
+    const index = `p${i}`;
+    return data[index]
+  });
 
   const reqData: ClimatePavimentReqDTO = {
     mode: data.mode,
-    precipitation_mm: ps,
+    precipitation_mm: pres,
     temp_celsius: ts,
     specific_gravity: data.specific_gravity,
     plasticity_index: data.plasticity_index,
@@ -53,6 +61,11 @@ export async function action({ request }: ActionFunctionArgs) {
     maximum_dry_density: data.maximum_dry_density,
     optimum_moisture_content: data.optimum_moisture_content,
     p200: data.p200,
+  }
+
+
+  if (data.mode === 'thick') {
+    reqData.sieves_passing = sievePassing;
   }
 
   const dataRes = {
@@ -77,6 +90,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function Route() {
   const fetcher = useFetcher<typeof action>();
+  const [mode, setMode] = useState<string>('thin');
 
   const isError = fetcher?.data?.error;
   const isSuccess = fetcher?.data?.success;
@@ -91,7 +105,9 @@ export default function Route() {
       <fetcher.Form method="POST" className="flex flex-col gap-4">
         <div className="flex gap-2 flex-col">
           <label className="font-bold">Mode</label>
-          <select name="mode" required className="p-2">
+          <select name="mode" onChange={(e) => {
+            setMode(e.target.value);
+          }} required className="p-2">
             <option value="thin">Thin</option>
             <option value="thick">Thick</option>
           </select>
@@ -105,7 +121,7 @@ export default function Route() {
               return (
                 <div key={monthIndex} className="flex flex-col gap-2">
                   <label className="text-sm">{month}</label>
-                  <input type="text" name={`p${monthIndex}`} required className="border-solid border w-full" />
+                  <input type="text" name={`pre${monthIndex}`} required className="border-solid border w-full" />
                 </div>
               );
             })}
@@ -162,7 +178,27 @@ export default function Route() {
             </div>
 
           </div>
+
         </div>
+
+
+        {mode === 'thick' &&
+          <div className='flex flex-col'>
+            <h2 className="font-bold">Sieves sizing</h2>
+
+            <div className='flex gap-4'>
+              {SIEVES_SIZING.map((size, sizeIndex) => {
+                return (
+                  <div key={sizeIndex} className="flex flex-col gap-2">
+                    <label className="text-sm">{size}</label>
+                    <input type="text" name={`p${sizeIndex}`} required className="border-solid border w-full" />
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        }
+
 
         <input className="bg-slate-300 p-2 hover:bg-slate-800 hover:text-slate-200 duration-300 ease cursor-pointer" type="submit" value="Calculate" />
       </fetcher.Form>
@@ -170,7 +206,7 @@ export default function Route() {
 
       {isError && <span>There is an error.</span>}
 
-      {isSuccess && formData &&  Object.keys(formData).map((key, keyIndex) => {
+      {isSuccess && formData && Object.keys(formData).map((key, keyIndex) => {
         return (
           <div className="flex flex-col gap-4">
             <h3>{key.toUpperCase()}</h3>

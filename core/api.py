@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel, conlist
-from typing import Union
+from typing import Union, Optional
 
 from climate_pavement import climate_pavements
 
@@ -16,6 +16,8 @@ class ClimatePavimentReqDTO(BaseModel):
     california_bearing_ratio: Union[float, int]
     maximum_dry_density: Union[float, int]
     optimum_moisture_content: Union[float, int]
+    sieves_passing: Optional[conlist(
+        Union[float, int], min_length=9, max_length=9)] = []
     p200: Union[float, int]
 
 
