@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException
 from pydantic import BaseModel, conlist
 from typing import Union, Optional
 from climate_pavement import climate_pavements
@@ -6,8 +6,8 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 app = FastAPI()
-app.mount("/static", StaticFiles(directory="static", html=True), name="static")
-templates = Jinja2Templates(directory="static")
+app.mount("/public", StaticFiles(directory="public", html=True), name="static")
+templates = Jinja2Templates(directory="public")
 
 
 class ClimatePavimentReqDTO(BaseModel):
@@ -38,5 +38,7 @@ async def version():
 
 @app.post("/api/climate-pavement-calculator")
 async def climate_in_pavement_calculator(req: ClimatePavimentReqDTO):
-    res = climate_pavements(req.dict())
-    return res
+    try:
+        return climate_pavements(req.dict())
+    except Exception:
+        raise HTTPException(status_code=404)
