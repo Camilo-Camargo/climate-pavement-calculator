@@ -1,5 +1,4 @@
 import math
-import numpy as np
 import bisect
 
 
@@ -34,7 +33,7 @@ def lerp(x0, y0, x1, y1, x):
 
 def ambient_factor(a3, b3, km, s, sopt):
     return [
-        10 ** (a3 + (b3 - a3) / (1 + np.exp(np.log(-b3 / a3) + km * (x - sopt))))
+        10 ** (a3 + (b3 - a3) / (1 + math.exp(math.log(-b3 / a3) + km * (x - sopt))))
         for x in s
     ]
 
