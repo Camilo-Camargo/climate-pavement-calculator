@@ -1,5 +1,4 @@
 import utils
-import numpy as np
 from constant import (
     TMI_PLASTIC, TMI_NO_PLASTIC,
     SIEVES_SIZES_IN_MM
@@ -44,8 +43,8 @@ def climate_pavements(data):
 
     mode = data['mode']
 
-    precipitation_mm = np.array(data["precipitation_mm"])
-    temp_celsius = np.array(data["temp_celsius"])
+    precipitation_mm = data["precipitation_mm"]
+    temp_celsius = data["temp_celsius"]
 
     specific_gravity = data['specific_gravity']
     plasticity_index = data['plasticity_index']
@@ -60,23 +59,23 @@ def climate_pavements(data):
         sieves_passing = data['sieves_passing']
 
     # TODO: Add latitude and longitude interpolation
-    sunshine_hours = np.array(
-        [
-            11.70, 11.80, 12.00, 12.10, 12.31, 12.30,
-            12.30, 12.20, 12.00, 11.90, 11.69, 11.70
-        ])
+    sunshine_hours = [
+        11.70, 11.80, 12.00, 12.10, 12.31, 12.30,
+        12.30, 12.20, 12.00, 11.90, 11.69, 11.70
+    ]
 
-    monthy_days = np.array(utils.number_of_day_per_month(2023))
+    monthy_days = utils.number_of_day_per_month(2023)
     monthly_heat = utils.monthly_heat_index(temp_celsius)
 
-    anual_heat = np.sum(monthly_heat)
+    anual_heat = sum(monthly_heat)
     anual_3rd_polynomial = utils.third_degree_polynomial(anual_heat)
     ept_unadjust = utils.ept_without_correction(
         temp_celsius, anual_heat, anual_3rd_polynomial)
     ept_adjusted = utils.ept_correction(
         ept_unadjust, sunshine_hours, monthy_days)
-    ept_adjusted = np.append(ept_adjusted, np.sum(ept_adjusted))
-    precipitation_mm = np.append(precipitation_mm, np.sum(precipitation_mm))
+
+    ept_adjusted.append(sum(ept_adjusted))
+    precipitation_mm.append(sum(precipitation_mm))
     tmi = utils.thornthwaite_moisture_index(ept_adjusted, precipitation_mm)
 
     if mode == 'thin':
@@ -218,7 +217,7 @@ def climate_pavements(data):
 
     ow = utils.volumetry_humedity(ch, osat, hm, af, bf, cf)
 
-    s = ow / osat
+    s = [x/osat for x in ow]
 
     if mode == 'thin':
         a3 = -0.5934
@@ -233,16 +232,16 @@ def climate_pavements(data):
     sopt = tetha_opt / osat
 
     famb = utils.ambient_factor(a3, b3, km, s, sopt)
-    cbr = famb * california_bearing_ratio
+    cbr = [x * california_bearing_ratio for x in famb]
 
     return {
-        "ept_unadjust": ept_unadjust.tolist(),
-        "ept_adjusted": ept_adjusted.tolist(),
-        "tmi": tmi.tolist(),
-        "hm": hm.tolist(),
-        "ch": ch.tolist(),
-        "ow": ow.tolist(),
-        "s": s.tolist(),
-        "famb": famb.tolist(),
-        "cbr": cbr.tolist()
+        "ept_unadjust": ept_unadjust,
+        "ept_adjusted": ept_adjusted,
+        "tmi": tmi,
+        "hm": hm,
+        "ch": ch,
+        "ow": ow,
+        "s": s,
+        "famb": famb,
+        "cbr": cbr
     }

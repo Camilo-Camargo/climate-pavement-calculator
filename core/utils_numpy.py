@@ -33,10 +33,9 @@ def lerp(x0, y0, x1, y1, x):
 
 
 def ambient_factor(a3, b3, km, s, sopt):
-    return [
-        10 ** (a3 + (b3 - a3) / (1 + np.exp(np.log(-b3 / a3) + km * (x - sopt))))
-        for x in s
-    ]
+    return 10 ** (
+        a3 + (b3 - a3) / (1 + np.exp(np.log(-b3 / a3) + km * (s - sopt)))
+    )
 
 
 def tetha_opt(wopt, pdmax):
@@ -115,14 +114,11 @@ def volumetry_humedity_saturated(pdmax, gs):
 
 
 def volumetry_humedity(ch, osat, hm, af, bf, cf):
-    return [
-        y * (osat/(math.log(math.exp(1) + (x/af) ** bf)**cf))
-        for (x, y) in zip(hm, ch)
-    ]
+    return ch * (osat/(np.log(np.exp(1) + (hm/af) ** bf)**cf))
 
 
 def monthly_heat_index(average_temperature_celsius):
-    return [(x/5) ** 1.514 for x in average_temperature_celsius]
+    return (average_temperature_celsius/5) ** 1.514
 
 
 def ept_without_correction(
@@ -130,38 +126,23 @@ def ept_without_correction(
     anual_heat,
     anual_temp_3rd_poly
 ):
-    return [
-        16 * (10 * x/anual_heat) ** anual_temp_3rd_poly
-        for x in temp_celsius
-    ]
+    return 16 * (10 * temp_celsius / anual_heat) ** anual_temp_3rd_poly
 
 
 def ept_correction(ept_unadjust, sunshine_hours, monthly_days):
-    return [
-        x * (y/12)*(z/30)
-        for (x, y, z) in zip(ept_unadjust, sunshine_hours, monthly_days)
-    ]
+    return ept_unadjust * (sunshine_hours/12)*(monthly_days/30)
 
 
-def thornthwaite_moisture_index(ept_adjusted, precipitation):
-    return [
-        75 * (y/x - 1) + 10
-        for (x, y) in zip(ept_adjusted, precipitation)
-    ]
+def thornthwaite_moisture_index(ept_adjusted, precipitation,):
+    return 75 * (precipitation / ept_adjusted - 1) + 10
 
 
 def matric_suction_plastic(a, b, y, s, tmi):
-    return [
-        a * (math.exp(b / (x + y)) + s)
-        for x in tmi
-    ]
+    return a * (np.exp(b / (tmi + y)) + s)
 
 
 def matric_suction_no_plastic(a, b, y, tmi):
-    return [
-        a + math.e ** (b + y * (x + 101))
-        for x in tmi
-    ]
+    return a + math.e ** (b+y*(tmi+101))
 
 
 def third_degree_polynomial(anual_temp):
@@ -174,10 +155,7 @@ def third_degree_polynomial(anual_temp):
 
 
 def adjust_factor(hm, hr):
-    return [
-        (1 - (math.log(1 + (x / hr)) / (math.log(1 + (10 ** 6 / hr)))))
-        for x in hm
-    ]
+    return (1 - (np.log(1 + (hm / hr)) / (np.log(1 + (10 ** 6 / hr)))))
 
 
 def sorround_num_keys(keys, value):
