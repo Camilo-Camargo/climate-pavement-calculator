@@ -96,13 +96,13 @@ export default function Route() {
   const formData = fetcher?.data?.data;
 
   return (
-    <div className="flex flex-col gap-10 p-12">
+    <div className="flex flex-wrap flex-col gap-10 p-12">
       <section>
         <h1 className="font-thin text-4xl">Climate Pavement Calculator</h1>
       </section>
 
       <fetcher.Form method="POST" className="flex flex-col gap-4">
-        <div className="flex gap-2 flex-col">
+        <div className="flex flex-wrap gap-2 flex-col">
           <label className="font-bold">Mode</label>
           <select name="mode" onChange={(e) => {
             setMode(e.target.value);
@@ -115,7 +115,7 @@ export default function Route() {
 
         <div className="flex flex-wrap flex-col gap-4" >
           <h2 className="font-bold">Precipitation in mm</h2>
-          <div className="flex justify-between gap-4">
+          <div className="flex flex-wrap justify-between gap-4">
             {MONTHS.map((month, monthIndex) => {
               return (
                 <div key={monthIndex} className="flex flex-col gap-2">
@@ -129,7 +129,7 @@ export default function Route() {
 
         <div className="flex flex-wrap flex-col gap-4" >
           <h2 className="font-bold">Temperature in Celsius</h2>
-          <div className="flex justify-between gap-4">
+          <div className="flex flex-wrap justify-between gap-4">
             {MONTHS.map((month, monthIndex) => {
               return (
                 <div key={monthIndex} className="flex flex-col gap-2">
@@ -142,9 +142,9 @@ export default function Route() {
         </div>
 
 
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-wrap flex-col gap-4">
           <h2 className="font-bold">More parameters</h2>
-          <div className="flex gap-4">
+          <div className="flex flex-wrap gap-4">
 
             <div className="flex flex-col gap-2">
               <label className="text-sm">Specific gravity</label>
@@ -185,7 +185,7 @@ export default function Route() {
           <div className='flex flex-col'>
             <h2 className="font-bold">Sieves sizing</h2>
 
-            <div className='flex gap-4'>
+            <div className='flex flex-wrap gap-4'>
               {SIEVES_SIZING.map((size, sizeIndex) => {
                 return (
                   <div key={sizeIndex} className="flex flex-col gap-2">
@@ -209,10 +209,10 @@ export default function Route() {
         return (
           <div className="flex flex-col gap-4">
             <h3>{key.toUpperCase()}</h3>
-            <div className="flex flex justify-between">
+            <div className="flex flex-wrap flex justify-between">
               {MONTHS.map((month, monthIndex) => {
                 return (
-                  <div key={monthIndex} className="flex flex-col gap-2">
+                  <div key={monthIndex} className="flex flex-wrap flex-col gap-2">
                     <span className="text-sm">{month}</span>
                     <span>{parseFloat(formData[key][monthIndex]).toFixed(3)}</span>
                   </div>
