@@ -1,0 +1,19 @@
+# TODO: Add depends on web in core service
+version: "3.8"
+services:
+  web:
+    build: ./web-spa
+    volumes:
+      - ./web-spa:/app
+      - ./core:/core
+    env_file:
+      - .env
+  core:
+    build: ./core
+    restart: always
+    volumes:
+      - ./core:/app
+    env_file:
+      - .env
+    ports:
+      - 3000:8000

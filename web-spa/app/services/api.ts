@@ -1,4 +1,4 @@
-const API_URL = `http://localhost:8000/api`;
+const API_URL = `/api`;
 
 export async function apiPost(path: string, params?: {}) {
   return await fetch(`${API_URL}${path}`, {
