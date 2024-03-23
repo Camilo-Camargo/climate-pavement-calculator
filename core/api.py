@@ -1,6 +1,6 @@
 import os
 from fastapi import FastAPI, Request, HTTPException
-from pydantic import BaseModel, conlist
+from pydantic import BaseModel, conlist, validator
 from typing import Union, Optional
 from climate_pavement import climate_pavements
 from fastapi.staticfiles import StaticFiles
@@ -35,7 +35,15 @@ class ClimatePavimentReqDTO(BaseModel):
     optimum_moisture_content: Union[float, int]
     sieves_passing: Optional[conlist(
         Union[float, int], min_length=9, max_length=9)] = []
+    latitude: Union[float, int]
+    direction: str
     p200: Union[float, int]
+
+    @validator('direction')
+    def validate_direction(cls, v):
+        if v not in ['N', 'S']:
+            raise ValueError("direction must be 'N' or 'S'")
+        return v
 
 
 @app.get('/')

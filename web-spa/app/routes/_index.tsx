@@ -13,6 +13,8 @@ type ClimatePavimentReqDTO = {
   maximum_dry_density: number;
   optimum_moisture_content: number;
   sieves_passing?: number[];
+  latitude: number;
+  direction: string;
   p200: number;
 };
 
@@ -24,6 +26,10 @@ const SPANISH_TEXT = {
   'description': 'Variación de la resistencia de capas de pavimentos por efecto del clima',
   'mode': 'modo',
   'calculate': 'Calcular',
+  'direction': 'Dirección',
+  'north': 'Norte',
+  'south': 'Sur',
+  'latitude': 'Latitud',
   'thin': 'Suelos considerados como plásticos (P200 ≥ 10% o wPI ≥ 2.0)',
   'thick': 'Suelos considerados como no Plásticos (P200 < 10% y wPI < 2.0)',
   'precipitation_in_mm': 'Precipitación, P (mm)',
@@ -92,6 +98,8 @@ export async function clientAction({ request }: ClientActionFunctionArgs) {
     california_bearing_ratio: data.california_bearing_ratio,
     maximum_dry_density: data.maximum_dry_density,
     optimum_moisture_content: data.optimum_moisture_content,
+    latitude: data.latitude,
+    direction: data.direction,
     p200: data.p200,
   }
 
@@ -135,6 +143,7 @@ export default function Route() {
       </section>
 
       <fetcher.Form method="POST" className="flex flex-col gap-4">
+
         <div className="flex flex-wrap gap-2 flex-col">
           <label className="font-bold">{LANG_TEXT[lang]['mode']}</label>
           <select name="mode" onChange={(e) => {
@@ -143,6 +152,25 @@ export default function Route() {
             <option value="thin">{LANG_TEXT[lang]['thin']}</option>
             <option value="thick">{LANG_TEXT[lang]['thick']}</option>
           </select>
+
+        </div>
+
+        <div className="flex gap-4">
+          <div className="flex gap-2 justify-between items-center">
+            <label>{LANG_TEXT[lang]['direction']}</label>
+            <select name="direction" onChange={(e) => {
+              setMode(e.target.value);
+            }} required className="p-2">
+              <option value="N">{LANG_TEXT[lang]['north']}</option>
+              <option value="S">{LANG_TEXT[lang]['south']}</option>
+            </select>
+          </div>
+
+          <div className="flex gap-2 justify-between items-center">
+            <label>{LANG_TEXT[lang]['latitude']}</label>
+            <input type="text" name='latitude' required className="border-solid border" />
+          </div>
+
         </div>
 
 

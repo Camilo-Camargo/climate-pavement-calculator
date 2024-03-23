@@ -1,11 +1,15 @@
 from climate_pavement import climate_pavements
 from climate_pavement_numpy import climate_pavements_numpy
+import latitude
 
 # specific_gravity =  gs
 # plasticity_index =  ip
 # california_bearing_ratio =  cbr
 # maximum_dry_density =  pdmax
 # optimum_moisture_content = wopt
+
+# latitude 5.54
+# direction norte
 
 thin_data = {
     "mode": "thin",
@@ -20,6 +24,8 @@ thin_data = {
     'california_bearing_ratio': 30,
     'maximum_dry_density': 1240,
     'optimum_moisture_content': 38,
+    'latitude': 5.54,
+    'direction': 'N',
     'p200': 58,
 }
 
@@ -37,8 +43,13 @@ thick_data = {
     'maximum_dry_density': 2024,
     'optimum_moisture_content': 8.500,
     'sieves_passing': [100, 98.3, 92.8, 85.1, 77.1, 69.9, 53.7, 38.6, 27.1],
+    'latitude': 5.54,
+    'direction': 'N',
     'p200': 8.50
 }
 
-print([x == y for (x, y) in zip(climate_pavements_numpy(data=thin_data), climate_pavements(data=thin_data))])
-print([x == y for (x, y) in zip(climate_pavements_numpy(data=thick_data), climate_pavements(data=thick_data))])
+# print(climate_pavements(data=thin_data)['cbr'])
+# print(climate_pavements(data=thick_data)['cbr'])
+
+# print([x == y for (x, y) in zip(climate_pavements_numpy(data=thin_data), climate_pavements(data=thin_data))])
+# print([x == y for (x, y) in zip(climate_pavements_numpy(data=thick_data), climate_pavements(data=thick_data))])

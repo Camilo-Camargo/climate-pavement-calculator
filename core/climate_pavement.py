@@ -1,4 +1,5 @@
 import utils
+from latitude import lerp_latitudes
 from constant import (
     TMI_PLASTIC, TMI_NO_PLASTIC,
     SIEVES_SIZES_IN_MM
@@ -37,6 +38,12 @@ def climate_pavement_validation(data):
     if "p200" not in data:
         raise Exception("You must provide p200")
 
+    if "latitude" not in data:
+        raise Exception("You must provide latitude")
+
+    if "direction" not in data:
+        raise Exception("You must provide direction")
+
 
 def climate_pavements(data):
     climate_pavement_validation(data)
@@ -52,6 +59,8 @@ def climate_pavements(data):
     maximum_dry_density = data['maximum_dry_density']
     optimum_moisture_content = data['optimum_moisture_content']
     p200 = data['p200']
+    latitude = data['latitude']
+    direction = data['direction']
 
     if mode == 'thin':
         wpi = (p200 / 100) * plasticity_index
@@ -59,11 +68,7 @@ def climate_pavements(data):
         sieves_passing = data['sieves_passing']
 
     # TODO: Add latitude and longitude interpolation
-    sunshine_hours = [
-        11.70, 11.80, 12.00, 12.10, 12.31, 12.30,
-        12.30, 12.20, 12.00, 11.90, 11.69, 11.70
-    ]
-
+    sunshine_hours = lerp_latitudes(latitude, direction)
     monthy_days = utils.number_of_day_per_month(2023)
     monthly_heat = utils.monthly_heat_index(temp_celsius)
 
