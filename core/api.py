@@ -11,7 +11,7 @@ ENV = os.environ["ENV"]
 
 app = FastAPI()
 
-if ENV == "prod":
+if ENV == "prod" or ENV == "prod-build":
     app.mount("/public", StaticFiles(directory="public", html=True))
     templates = Jinja2Templates(directory="public")
 else:

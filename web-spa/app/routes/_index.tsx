@@ -108,7 +108,7 @@ export async function clientAction({ request }: ClientActionFunctionArgs) {
 
   let resData, resJson;
   try {
-    resData = await apiPost(import.meta.env.WEB_DEV, '/climate-pavement-calculator', reqData);
+    resData = await apiPost('/climate-pavement-calculator', reqData);
     resJson = await resData.json();
   } catch (e) {
     dataRes.error = true;

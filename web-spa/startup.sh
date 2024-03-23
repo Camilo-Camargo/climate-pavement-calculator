@@ -6,11 +6,11 @@ apk add bash
 echo "Installing dependiencies"
 yarn install
 
-if [ $ENV = "prod" ]; then
+if [ $ENV = "prod" -o $ENV = "prod-build" -o $ENV = "build" ]; then
   echo "------------ PRODUCTION MODE ------------"
   yarn build
   cd build
-    rm /core/public
+    rm -rf /core/public
     mv ./client /core/public
   cd ..
 else
