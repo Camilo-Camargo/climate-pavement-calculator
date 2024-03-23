@@ -3,7 +3,6 @@ import { json, ClientActionFunctionArgs, useFetcher } from "@remix-run/react";
 import { useState } from 'react';
 import { apiPost } from "~/services/api";
 
-
 type ClimatePavimentReqDTO = {
   mode: string;
   precipitation_mm: number[];
@@ -16,6 +15,7 @@ type ClimatePavimentReqDTO = {
   sieves_passing?: number[];
   p200: number;
 };
+
 
 export const meta: MetaFunction = () => {
   return [
@@ -75,7 +75,7 @@ export async function clientAction({ request }: ClientActionFunctionArgs) {
 
   let resData, resJson;
   try {
-    resData = await apiPost('/climate-pavement-calculator', reqData);
+    resData = await apiPost(import.meta.env.WEB_DEV, '/climate-pavement-calculator', reqData);
     resJson = await resData.json();
   } catch (e) {
     dataRes.error = true;

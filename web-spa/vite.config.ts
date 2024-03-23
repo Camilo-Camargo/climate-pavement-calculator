@@ -3,7 +3,11 @@ import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
-  base: '/public/',
+  base: process.env.ENV === 'prod' ? '/public/' : '/',
+  server: {
+    host: '0.0.0.0'
+  },
+  envPrefix: "WEB_",
   plugins: [
     remix({
       ssr: false,

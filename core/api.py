@@ -1,13 +1,27 @@
+import os
 from fastapi import FastAPI, Request, HTTPException
 from pydantic import BaseModel, conlist
 from typing import Union, Optional
 from climate_pavement import climate_pavements
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from fastapi.middleware.cors import CORSMiddleware
+
+ENV = os.environ["ENV"]
 
 app = FastAPI()
-app.mount("/public", StaticFiles(directory="public", html=True), name="static")
-templates = Jinja2Templates(directory="public")
+
+if ENV == "prod":
+    app.mount("/public", StaticFiles(directory="public", html=True))
+    templates = Jinja2Templates(directory="public")
+else:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 
 class ClimatePavimentReqDTO(BaseModel):
