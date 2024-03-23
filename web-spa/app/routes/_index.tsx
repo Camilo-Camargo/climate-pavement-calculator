@@ -17,17 +17,50 @@ type ClimatePavimentReqDTO = {
 };
 
 
-export const meta: MetaFunction = () => {
-  return [
-    { title: "Climate Pavement" },
-    { name: "description", content: "Climate Pavement calculator" },
-  ];
+const lang = 'es';
+
+const SPANISH_TEXT = {
+  'title': 'Variación de la resistencia de capas de pavimentos por efecto del clima',
+  'description': 'Variación de la resistencia de capas de pavimentos por efecto del clima',
+  'mode': 'modo',
+  'calculate': 'Calcular',
+  'thin': 'Suelos considerados como plásticos (P200 ≥ 10% o wPI ≥ 2.0)',
+  'thick': 'Suelos considerados como no Plásticos (P200 < 10% y wPI < 2.0)',
+  'precipitation_in_mm': 'Precipitación, P (mm)',
+  'temperature_in_celsius': 'Temperatura, T (°C)',
+  'more_parameters': 'Caracterización del material',
+  'specific_gravity': 'Gravedad específica, Gs ',
+  'plasticy_index': 'Índice plástico, IP (%)',
+  'california_bearing_ratio': 'Parámetro de resistencia, CBR (%)',
+  'maximun_dry_density': 'Densidad seca máxima, γd (kg/m3)',
+  'optimum_moisture_content': 'Humedad óptima, ωopt (%)',
+  'p200': 'Pasa tamiz No. 200, P200 (%)',
+  'sieves_sizing': 'Pasa  en tamices (%)',
+  'ept_unadjust': 'Evapotranspiración potencial sin corregir, ETPnc (mm/mes)',
+  'ept_adjusted': 'Evapotranspiración potencial corregida, ETP (mm/mes)',
+  'tmi': 'Índice de Thornthwaite, TMI',
+  'hm': 'Succión matricial, hm (kPa)',
+  'ch': 'Factor de ajuste, c(h)',
+  'ow': 'Humedad volumétrica, θw',
+  's': 'Saturación, S (°/1)',
+  'famb': 'Factor ambiental, Famb',
+  'cbr': 'CBR afectado por el clima (%)',
+  'anual': 'Anual',
+  months: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
 };
 
-const MONTHS: string[] = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December"
-];
+const LANG_TEXT = {
+  "es": SPANISH_TEXT
+};
+
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: LANG_TEXT[lang]['title'] },
+    { name: "description", content: LANG_TEXT[lang]['description'] },
+  ];
+};
 
 const SIEVES_SIZING = ["2\"", "1-1/2\"", "1\"", "3/4\"", "1/2\"", "3/8\"", "No. 4", "No. 10", "No. 40"];
 
@@ -35,12 +68,12 @@ export async function clientAction({ request }: ClientActionFunctionArgs) {
   const formData = await request.formData();
   const data = Object.fromEntries(formData) as any;
 
-  const pres = MONTHS.map((_, i) => {
+  const pres = LANG_TEXT[lang].months.map((_, i) => {
     const index = `pre${i}`;
     return data[index]
   })
 
-  const ts = MONTHS.map((_, i) => {
+  const ts = LANG_TEXT[lang].months.map((_, i) => {
     const index = `t${i}`;
     return data[index]
   })
@@ -98,25 +131,25 @@ export default function Route() {
   return (
     <div className="flex flex-wrap flex-col gap-10 p-12">
       <section>
-        <h1 className="font-thin text-4xl">Climate Pavement Calculator</h1>
+        <h1 className="font-thin text-4xl">{LANG_TEXT[lang]['title']}</h1>
       </section>
 
       <fetcher.Form method="POST" className="flex flex-col gap-4">
         <div className="flex flex-wrap gap-2 flex-col">
-          <label className="font-bold">Mode</label>
+          <label className="font-bold">{LANG_TEXT[lang]['mode']}</label>
           <select name="mode" onChange={(e) => {
             setMode(e.target.value);
           }} required className="p-2">
-            <option value="thin">Thin</option>
-            <option value="thick">Thick</option>
+            <option value="thin">{LANG_TEXT[lang]['thin']}</option>
+            <option value="thick">{LANG_TEXT[lang]['thick']}</option>
           </select>
         </div>
 
 
         <div className="flex flex-wrap flex-col gap-4" >
-          <h2 className="font-bold">Precipitation in mm</h2>
+          <h2 className="font-bold">{LANG_TEXT[lang]['precipitation_in_mm']}</h2>
           <div className="flex flex-wrap justify-between gap-4">
-            {MONTHS.map((month, monthIndex) => {
+            {LANG_TEXT[lang].months.map((month, monthIndex) => {
               return (
                 <div key={monthIndex} className="flex flex-col gap-2">
                   <label className="text-sm">{month}</label>
@@ -128,9 +161,9 @@ export default function Route() {
         </div>
 
         <div className="flex flex-wrap flex-col gap-4" >
-          <h2 className="font-bold">Temperature in Celsius</h2>
+          <h2 className="font-bold">{LANG_TEXT[lang]['temperature_in_celsius']}</h2>
           <div className="flex flex-wrap justify-between gap-4">
-            {MONTHS.map((month, monthIndex) => {
+            {LANG_TEXT[lang].months.map((month, monthIndex) => {
               return (
                 <div key={monthIndex} className="flex flex-col gap-2">
                   <label className="text-sm">{month}</label>
@@ -143,36 +176,36 @@ export default function Route() {
 
 
         <div className="flex flex-wrap flex-col gap-4">
-          <h2 className="font-bold">More parameters</h2>
+          <h2 className="font-bold">{LANG_TEXT[lang]['more_parameters']}</h2>
           <div className="flex flex-wrap gap-4">
 
             <div className="flex flex-col gap-2">
-              <label className="text-sm">Specific gravity</label>
+              <label className="text-sm">{LANG_TEXT[lang]['specific_gravity']}</label>
               <input type="text" name="specific_gravity" required className="border-solid border w-full" />
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="text-sm">Plasticity index</label>
+              <label className="text-sm">{LANG_TEXT[lang]['plasticy_index']}</label>
               <input type="text" name="plasticity_index" required className="border-solid border w-full" />
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="text-sm">California bearing ratio</label>
+              <label className="text-sm">{LANG_TEXT[lang]['california_bearing_ratio']}</label>
               <input type="text" name="california_bearing_ratio" required className="border-solid border w-full" />
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="text-sm">Maximum dry density</label>
+              <label className="text-sm">{LANG_TEXT[lang]['maximun_dry_density']}</label>
               <input type="text" name="maximum_dry_density" required className="border-solid border w-full" />
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="text-sm">Optimum moisture content</label>
+              <label className="text-sm">{LANG_TEXT[lang]['optimum_moisture_content']}</label>
               <input type="text" name="optimum_moisture_content" required className="border-solid border w-full" />
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="text-sm">P200</label>
+              <label className="text-sm">{LANG_TEXT[lang]['p200']}</label>
               <input type="text" name="p200" required className="border-solid border w-full" />
             </div>
 
@@ -183,7 +216,7 @@ export default function Route() {
 
         {mode === 'thick' &&
           <div className='flex flex-col'>
-            <h2 className="font-bold">Sieves sizing</h2>
+            <h2 className="font-bold">{LANG_TEXT[lang]['sieves_sizing']}</h2>
 
             <div className='flex flex-wrap gap-4'>
               {SIEVES_SIZING.map((size, sizeIndex) => {
@@ -199,18 +232,20 @@ export default function Route() {
         }
 
 
-        <input className="bg-slate-300 p-2 hover:bg-slate-800 hover:text-slate-200 duration-300 ease cursor-pointer" type="submit" value="Calculate" />
+        <input className="bg-slate-300 p-2 hover:bg-slate-800 hover:text-slate-200 duration-300 ease cursor-pointer" type="submit" value={LANG_TEXT[lang]['calculate']} />
       </fetcher.Form>
 
 
       {isError && <span>There is an error.</span>}
 
       {isSuccess && formData && Object.keys(formData).map((key, keyIndex) => {
+        const monthsAndAnual = [...LANG_TEXT[lang].months];
+        monthsAndAnual.push(LANG_TEXT[lang].anual);
         return (
           <div className="flex flex-col gap-4">
-            <h3>{key.toUpperCase()}</h3>
+            <h3>{LANG_TEXT[lang][key]}</h3>
             <div className="flex flex-wrap flex justify-between">
-              {MONTHS.map((month, monthIndex) => {
+              {monthsAndAnual.map((month, monthIndex) => {
                 return (
                   <div key={monthIndex} className="flex flex-wrap flex-col gap-2">
                     <span className="text-sm">{month}</span>
