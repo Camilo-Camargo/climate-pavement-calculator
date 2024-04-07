@@ -66,8 +66,9 @@ def climate_pavements(data):
         wpi = (p200 / 100) * plasticity_index
     else:
         sieves_passing = data['sieves_passing']
+        sieves_passing.append(p200)
+        sieves_passing = sorted(sieves_passing)
 
-    # TODO: Add latitude and longitude interpolation
     sunshine_hours = lerp_latitudes(latitude, direction)
     monthy_days = utils.number_of_day_per_month(2023)
     monthly_heat = utils.monthly_heat_index(temp_celsius)
@@ -97,8 +98,12 @@ def climate_pavements(data):
 
         else:
             p_middle = wpi
+            tmi_no_plastic_keys = list(TMI_NO_PLASTIC.keys())
             (p_before, p_after) = utils.sorround_num_keys(
-                TMI_NO_PLASTIC, p_middle)
+                tmi_no_plastic_keys, p_middle)
+
+            p_before = tmi_no_plastic_keys[p_before]
+            p_after = tmi_no_plastic_keys[p_after]
 
             s_before = TMI_NO_PLASTIC[p_before]['s']
             s_after = TMI_NO_PLASTIC[p_after]['s']
@@ -131,9 +136,13 @@ def climate_pavements(data):
             b = TMI_NO_PLASTIC[:-1]['b']
             y = TMI_NO_PLASTIC[:-1]['y']
         else:
+            tmi_plastic_keys = list(TMI_PLASTIC.keys())
             p_middle = p200
             (p_before, p_after) = utils.sorround_num_keys(
-                TMI_PLASTIC.keys(), p_middle)
+                tmi_plastic_keys, p_middle)
+
+            p_before = tmi_plastic_keys[p_before]
+            p_after = tmi_plastic_keys[p_after]
 
             a_before = TMI_PLASTIC[p_before]['a']
             a_after = TMI_PLASTIC[p_after]['a']
@@ -164,41 +173,96 @@ def climate_pavements(data):
         bf = utils.bf_swcc_thin(wpi)
         cf = utils.cf_swcc_thin(wpi)
     else:
+        s_middle = 90
+        (s_before, s_after) = utils.sorround_num_keys(
+            sieves_passing, s_middle)
+
+        s_before_i = s_before
+        s_after_i = s_after
+
+        s_before = sieves_passing[s_before]
+        s_after = sieves_passing[s_after]
+
         d90 = utils.d_generator(
-            SIEVES_SIZES_IN_MM[2],
-            SIEVES_SIZES_IN_MM[4],
-            sieves_passing[2],
-            sieves_passing[4],
-            90
+            SIEVES_SIZES_IN_MM[s_before_i],
+            SIEVES_SIZES_IN_MM[s_after_i],
+            s_before,
+            s_after,
+            s_middle
         )
+
+        s_middle = 60
+        (s_before, s_after) = utils.sorround_num_keys(
+            sieves_passing, s_middle)
+
+        s_before_i = s_before
+        s_after_i = s_after
+
+        s_before = sieves_passing[s_before]
+        s_after = sieves_passing[s_after]
+
         d60 = utils.d_generator(
-            SIEVES_SIZES_IN_MM[5],
-            SIEVES_SIZES_IN_MM[6],
-            sieves_passing[5],
-            sieves_passing[6],
-            60
+            SIEVES_SIZES_IN_MM[s_before_i],
+            SIEVES_SIZES_IN_MM[s_after_i],
+            s_before,
+            s_after,
+            s_middle
         )
+
+        s_middle = 20
+        (s_before, s_after) = utils.sorround_num_keys(
+            sieves_passing, s_middle)
+
+        s_before_i = s_before
+        s_after_i = s_after
+
+        s_before = sieves_passing[s_before]
+        s_after = sieves_passing[s_after]
+
         d20 = utils.d_generator(
-            SIEVES_SIZES_IN_MM[8],
-            SIEVES_SIZES_IN_MM[9],
-            sieves_passing[8],
-            p200,
-            20
+            SIEVES_SIZES_IN_MM[s_before_i],
+            SIEVES_SIZES_IN_MM[s_after_i],
+            s_before,
+            s_after,
+            s_middle
         )
+
+        s_middle = 30
+        (s_before, s_after) = utils.sorround_num_keys(
+            sieves_passing, s_middle)
+
+        s_before_i = s_before
+        s_after_i = s_after
+
+        s_before = sieves_passing[s_before]
+        s_after = sieves_passing[s_after]
+
         d30 = utils.d_generator(
-            SIEVES_SIZES_IN_MM[7],
-            SIEVES_SIZES_IN_MM[8],
-            sieves_passing[7],
-            sieves_passing[8],
-            30
+            SIEVES_SIZES_IN_MM[s_before_i],
+            SIEVES_SIZES_IN_MM[s_after_i],
+            s_before,
+            s_after,
+            s_middle
         )
+
+        s_middle = 10
+        (s_before, s_after) = utils.sorround_num_keys(
+            sieves_passing, s_middle)
+
+        s_before_i = s_before
+        s_after_i = s_after
+
+        s_before = sieves_passing[s_before]
+        s_after = sieves_passing[s_after]
+
         d10 = utils.d_generator(
-            SIEVES_SIZES_IN_MM[8],
-            SIEVES_SIZES_IN_MM[9],
-            sieves_passing[8],
-            p200,
-            10
+            SIEVES_SIZES_IN_MM[s_before_i],
+            SIEVES_SIZES_IN_MM[s_after_i],
+            s_before,
+            s_after,
+            s_middle
         )
+
         m1 = utils.m_1(d90, d60)
         d100 = utils.d_100(m1, d60)
         a2 = utils.a_swcc(d20, p200, d30, d100)

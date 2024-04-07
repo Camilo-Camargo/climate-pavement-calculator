@@ -180,9 +180,16 @@ def adjust_factor(hm, hr):
 
 
 def sorround_num_keys(keys, value):
-    sorted_keys = sorted(keys)
-    index = bisect.bisect_right(sorted_keys, value)
-    key_before = sorted_keys[index-1]
-    key_after = sorted_keys[index]
+    keys = list(keys)
+    index = bisect.bisect_right(keys, value)
+    if index == 0:
+        before = 1
+    else:
+        before = index-1
 
-    return (key_before, key_after)
+    after = index
+
+    if after == 0:
+        after = 1
+
+    return (before, after)
