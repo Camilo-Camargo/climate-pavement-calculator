@@ -86,14 +86,14 @@ def climate_pavements(data):
     if mode == 'thin':
         a = 0.3
         if wpi <= 0.5:
-            b = TMI_NO_PLASTIC[0.5]['b']
-            y = TMI_NO_PLASTIC[0.5]['y']
-            s = TMI_NO_PLASTIC[0.5]['s']
+            b = TMI_NO_PLASTIC[:1]['b']
+            y = TMI_NO_PLASTIC[:1]['y']
+            s = TMI_NO_PLASTIC[:1]['s']
 
         elif wpi >= 50:
-            b = TMI_NO_PLASTIC[50]['b']
-            y = TMI_NO_PLASTIC[50]['y']
-            s = TMI_NO_PLASTIC[50]['s']
+            b = TMI_NO_PLASTIC[:-1]['b']
+            y = TMI_NO_PLASTIC[:-1]['y']
+            s = TMI_NO_PLASTIC[:-1]['s']
 
         elif wpi > 0.5 and wpi < 50:
             p_middle = wpi
