@@ -1,6 +1,4 @@
 from climate_pavement import climate_pavements
-from climate_pavement_numpy import climate_pavements_numpy
-import latitude
 
 # specific_gravity =  gs
 # plasticity_index =  ip
@@ -50,8 +48,5 @@ thick_data = {
 
 data = thick_data
 result = climate_pavements(data=data)
-for thin in result:
-    print(result[data])
-
-# print([x == y for (x, y) in zip(climate_pavements_numpy(data=thin_data), climate_pavements(data=thin_data))])
-# print([x == y for (x, y) in zip(climate_pavements_numpy(data=thick_data), climate_pavements(data=thick_data))])
+for r in result:
+    print(result[r])
