@@ -48,8 +48,12 @@ thick_data = {
     'p200': 8.50
 }
 
-# print(climate_pavements(data=thin_data)['cbr'])
-# print(climate_pavements(data=thick_data)['cbr'])
+thin_result = climate_pavements(data=thin_data)
+for thin in thin_result:
+    print(thin_result[thin])
+
+# for thick in climate_pavements(data=thick_data):
+#    print(thick)
 
 # print([x == y for (x, y) in zip(climate_pavements_numpy(data=thin_data), climate_pavements(data=thin_data))])
 # print([x == y for (x, y) in zip(climate_pavements_numpy(data=thick_data), climate_pavements(data=thick_data))])

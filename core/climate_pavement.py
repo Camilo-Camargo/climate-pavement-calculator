@@ -86,39 +86,34 @@ def climate_pavements(data):
     if mode == 'thin':
         a = 0.3
         if wpi <= 0.5:
-            b = TMI_NO_PLASTIC[2]['b']
-            y = TMI_NO_PLASTIC[2]['y']
-            s = TMI_NO_PLASTIC[2]['s']
+            b = TMI_NO_PLASTIC[0.5]['b']
+            y = TMI_NO_PLASTIC[0.5]['y']
+            s = TMI_NO_PLASTIC[0.5]['s']
 
-        if wpi >= 50:
-            b = TMI_NO_PLASTIC[6]['b']
-            y = TMI_NO_PLASTIC[6]['y']
-            s = TMI_NO_PLASTIC[6]['s']
+        elif wpi >= 50:
+            b = TMI_NO_PLASTIC[50]['b']
+            y = TMI_NO_PLASTIC[50]['y']
+            s = TMI_NO_PLASTIC[50]['s']
 
-        if wpi > 0.5 and wpi < 50:
-            tmi_table = [5, 10, 20]
-
+        elif wpi > 0.5 and wpi < 50:
             p_middle = wpi
             (p_before, p_after) = utils.sorround_num_keys(
-                tmi_table, p_middle)
+                TMI_NO_PLASTIC, p_middle)
 
-            p_before_i = tmi_table.index(p_before) + 3
-            p_after_i = tmi_table.index(p_after) + 3
-
-            s_before = TMI_NO_PLASTIC[p_before_i]['s']
-            s_after = TMI_NO_PLASTIC[p_after_i]['s']
+            s_before = TMI_NO_PLASTIC[p_before]['s']
+            s_after = TMI_NO_PLASTIC[p_after]['s']
 
             s = utils.lerp(int(p_before), s_before,
                            int(p_after), s_after, p_middle)
 
-            b_before = TMI_NO_PLASTIC[p_before_i]['b']
-            b_after = TMI_NO_PLASTIC[p_after_i]['b']
+            b_before = TMI_NO_PLASTIC[p_before]['b']
+            b_after = TMI_NO_PLASTIC[p_after]['b']
 
             b = utils.lerp(int(p_before), b_before,
                            int(p_after), b_after, p_middle)
 
-            y_before = TMI_NO_PLASTIC[p_before_i]['y']
-            y_after = TMI_NO_PLASTIC[p_after_i]['y']
+            y_before = TMI_NO_PLASTIC[p_before]['y']
+            y_after = TMI_NO_PLASTIC[p_after]['y']
 
             y = utils.lerp(int(p_before), y_before,
                            int(p_after), y_after, p_middle)
