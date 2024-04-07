@@ -95,7 +95,7 @@ def climate_pavements(data):
             y = TMI_NO_PLASTIC[:-1]['y']
             s = TMI_NO_PLASTIC[:-1]['s']
 
-        elif wpi > 0.5 and wpi < 50:
+        else:
             p_middle = wpi
             (p_before, p_after) = utils.sorround_num_keys(
                 TMI_NO_PLASTIC, p_middle)
@@ -121,27 +121,37 @@ def climate_pavements(data):
         hm = utils.matric_suction_plastic(a, b, y, s, tmi)
         hr = 500
     else:
-        p_middle = p200
-        (p_before, p_after) = utils.sorround_num_keys(
-            TMI_PLASTIC.keys(), p_middle)
+        if p200 < 0:
+            a = TMI_NO_PLASTIC[:1]['a']
+            b = TMI_NO_PLASTIC[:1]['b']
+            y = TMI_NO_PLASTIC[:1]['y']
 
-        a_before = TMI_PLASTIC[p_before]['a']
-        a_after = TMI_PLASTIC[p_after]['a']
+        elif p200 > 16:
+            a = TMI_NO_PLASTIC[:-1]['a']
+            b = TMI_NO_PLASTIC[:-1]['b']
+            y = TMI_NO_PLASTIC[:-1]['y']
+        else:
+            p_middle = p200
+            (p_before, p_after) = utils.sorround_num_keys(
+                TMI_PLASTIC.keys(), p_middle)
 
-        a = utils.lerp(int(p_before), a_before,
-                       int(p_after), a_after, p_middle)
+            a_before = TMI_PLASTIC[p_before]['a']
+            a_after = TMI_PLASTIC[p_after]['a']
 
-        b_before = TMI_PLASTIC[p_before]['b']
-        b_after = TMI_PLASTIC[p_after]['b']
+            a = utils.lerp(int(p_before), a_before,
+                           int(p_after), a_after, p_middle)
 
-        b = utils.lerp(int(p_before), b_before,
-                       int(p_after), b_after, p_middle)
+            b_before = TMI_PLASTIC[p_before]['b']
+            b_after = TMI_PLASTIC[p_after]['b']
 
-        y_before = TMI_PLASTIC[p_before]['y']
-        y_after = TMI_PLASTIC[p_after]['y']
+            b = utils.lerp(int(p_before), b_before,
+                           int(p_after), b_after, p_middle)
 
-        y = utils.lerp(int(p_before), y_before,
-                       int(p_after), y_after, p_middle)
+            y_before = TMI_PLASTIC[p_before]['y']
+            y_after = TMI_PLASTIC[p_after]['y']
+
+            y = utils.lerp(int(p_before), y_before,
+                           int(p_after), y_after, p_middle)
 
         hm = utils.matric_suction_no_plastic(a, b, y, tmi)
         hr = 100
