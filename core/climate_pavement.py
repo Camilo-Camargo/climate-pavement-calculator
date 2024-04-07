@@ -85,16 +85,6 @@ def climate_pavements(data):
 
     if mode == 'thin':
         a = 0.3
-        if p200 == 10 and wpi == 0:
-            b = TMI_NO_PLASTIC[0]['b']
-            y = TMI_NO_PLASTIC[0]['y']
-            s = TMI_NO_PLASTIC[0]['s']
-
-        if p200 == 50 and wpi == 0:
-            b = TMI_NO_PLASTIC[1]['b']
-            y = TMI_NO_PLASTIC[1]['y']
-            s = TMI_NO_PLASTIC[1]['s']
-
         if wpi <= 0.5:
             b = TMI_NO_PLASTIC[2]['b']
             y = TMI_NO_PLASTIC[2]['y']
@@ -133,8 +123,8 @@ def climate_pavements(data):
             y = utils.lerp(int(p_before), y_before,
                            int(p_after), y_after, p_middle)
 
-            hm = utils.matric_suction_plastic(a, b, y, s, tmi)
-            hr = 500
+        hm = utils.matric_suction_plastic(a, b, y, s, tmi)
+        hr = 500
     else:
         p_middle = p200
         (p_before, p_after) = utils.sorround_num_keys(
