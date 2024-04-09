@@ -86,19 +86,21 @@ def climate_pavements(data):
 
     if mode == 'thin':
         a = 0.3
-        if wpi <= 0.5:
-            b = TMI_NO_PLASTIC[:1]['b']
-            y = TMI_NO_PLASTIC[:1]['y']
-            s = TMI_NO_PLASTIC[:1]['s']
+        tmi_no_plastic_keys = list(TMI_NO_PLASTIC.keys())
+        first_tmi_no_plastic = tmi_no_plastic_keys[0]
+        last_tmi_no_plastic = tmi_no_plastic_keys[-1]
+        if wpi <= first_tmi_no_plastic:
+            b = TMI_NO_PLASTIC[first_tmi_no_plastic]['b']
+            y = TMI_NO_PLASTIC[first_tmi_no_plastic]['y']
+            s = TMI_NO_PLASTIC[first_tmi_no_plastic]['s']
 
-        elif wpi >= 50:
-            b = TMI_NO_PLASTIC[:-1]['b']
-            y = TMI_NO_PLASTIC[:-1]['y']
-            s = TMI_NO_PLASTIC[:-1]['s']
+        elif wpi >= last_tmi_no_plastic:
+            b = TMI_NO_PLASTIC[last_tmi_no_plastic]['b']
+            y = TMI_NO_PLASTIC[last_tmi_no_plastic]['y']
+            s = TMI_NO_PLASTIC[last_tmi_no_plastic]['s']
 
         else:
             p_middle = wpi
-            tmi_no_plastic_keys = list(TMI_NO_PLASTIC.keys())
             (p_before, p_after) = utils.sorround_num_keys(
                 tmi_no_plastic_keys, p_middle)
 
@@ -126,17 +128,19 @@ def climate_pavements(data):
         hm = utils.matric_suction_plastic(a, b, y, s, tmi)
         hr = 500
     else:
+        tmi_plastic_keys = list(TMI_PLASTIC.keys())
+        first_tmi_plastic_key = tmi_plastic_keys[0]
+        last_tmi_plastic_key = tmi_plastic_keys[-1]
         if p200 < 0:
-            a = TMI_NO_PLASTIC[:1]['a']
-            b = TMI_NO_PLASTIC[:1]['b']
-            y = TMI_NO_PLASTIC[:1]['y']
+            a = TMI_PLASTIC[first_tmi_plastic_key]['a']
+            b = TMI_PLASTIC[first_tmi_plastic_key]['b']
+            y = TMI_PLASTIC[first_tmi_plastic_key]['y']
 
         elif p200 > 16:
-            a = TMI_NO_PLASTIC[:-1]['a']
-            b = TMI_NO_PLASTIC[:-1]['b']
-            y = TMI_NO_PLASTIC[:-1]['y']
+            a = TMI_PLASTIC[last_tmi_plastic_key]['a']
+            b = TMI_PLASTIC[last_tmi_plastic_key]['b']
+            y = TMI_PLASTIC[last_tmi_plastic_key]['y']
         else:
-            tmi_plastic_keys = list(TMI_PLASTIC.keys())
             p_middle = p200
             (p_before, p_after) = utils.sorround_num_keys(
                 tmi_plastic_keys, p_middle)
