@@ -70,6 +70,23 @@ export const meta: MetaFunction = () => {
 
 const SIEVES_SIZING = ["2\"", "1-1/2\"", "1\"", "3/4\"", "1/2\"", "3/8\"", "No. 4", "No. 10", "No. 40"];
 
+type NumberInputProps = {
+  name?: string;
+  required?: boolean;
+  className?: string;
+};
+function NumberInput(props: NumberInputProps) {
+  return (
+    <input
+      title="Ingrese un número válido (por ejemplo, 123 o 123.45)"
+      type="text"
+      name={props.name}
+      required={props.required}
+      className={props.className}
+      pattern='\d+(\.\d+)?'
+    />
+  );
+}
 export async function clientAction({ request }: ClientActionFunctionArgs) {
   const formData = await request.formData();
   const data = Object.fromEntries(formData) as any;
@@ -168,7 +185,7 @@ export default function Route() {
 
           <div className="flex gap-2 justify-between items-center">
             <label>{LANG_TEXT[lang]['latitude']}</label>
-            <input type="text" name='latitude' required className="border-solid border" />
+            <NumberInput name='latitude' required className="border-solid border" />
           </div>
 
         </div>
@@ -181,7 +198,7 @@ export default function Route() {
               return (
                 <div key={monthIndex} className="flex flex-col gap-2">
                   <label className="text-sm">{month}</label>
-                  <input type="text" name={`pre${monthIndex}`} required className="border-solid border w-full" />
+                  <NumberInput name={`pre${monthIndex}`} required className="border-solid border w-full" />
                 </div>
               );
             })}
@@ -195,7 +212,7 @@ export default function Route() {
               return (
                 <div key={monthIndex} className="flex flex-col gap-2">
                   <label className="text-sm">{month}</label>
-                  <input type="text" name={`t${monthIndex}`} required className="border-solid border w-full" />
+                  <NumberInput name={`t${monthIndex}`} required className="border-solid border w-full" />
                 </div>
               );
             })}
@@ -209,32 +226,32 @@ export default function Route() {
 
             <div className="flex flex-col gap-2">
               <label className="text-sm">{LANG_TEXT[lang]['specific_gravity']}</label>
-              <input type="text" name="specific_gravity" required className="border-solid border w-full" />
+              <NumberInput name="specific_gravity" required className="border-solid border w-full" />
             </div>
 
             <div className="flex flex-col gap-2">
               <label className="text-sm">{LANG_TEXT[lang]['plasticy_index']}</label>
-              <input type="text" name="plasticity_index" required className="border-solid border w-full" />
+              <NumberInput name="plasticity_index" required className="border-solid border w-full" />
             </div>
 
             <div className="flex flex-col gap-2">
               <label className="text-sm">{LANG_TEXT[lang]['california_bearing_ratio']}</label>
-              <input type="text" name="california_bearing_ratio" required className="border-solid border w-full" />
+              <NumberInput name="california_bearing_ratio" required className="border-solid border w-full" />
             </div>
 
             <div className="flex flex-col gap-2">
               <label className="text-sm">{LANG_TEXT[lang]['maximun_dry_density']}</label>
-              <input type="text" name="maximum_dry_density" required className="border-solid border w-full" />
+              <NumberInput name="maximum_dry_density" required className="border-solid border w-full" />
             </div>
 
             <div className="flex flex-col gap-2">
               <label className="text-sm">{LANG_TEXT[lang]['optimum_moisture_content']}</label>
-              <input type="text" name="optimum_moisture_content" required className="border-solid border w-full" />
+              <NumberInput name="optimum_moisture_content" required className="border-solid border w-full" />
             </div>
 
             <div className="flex flex-col gap-2">
               <label className="text-sm">{LANG_TEXT[lang]['p200']}</label>
-              <input type="text" name="p200" required className="border-solid border w-full" />
+              <NumberInput name="p200" required className="border-solid border w-full" />
             </div>
 
           </div>
@@ -251,7 +268,7 @@ export default function Route() {
                 return (
                   <div key={sizeIndex} className="flex flex-col gap-2">
                     <label className="text-sm">{size}</label>
-                    <input type="text" name={`p${sizeIndex}`} required className="border-solid border w-full" />
+                    <NumberInput name={`p${sizeIndex}`} required className="border-solid border w-full" />
                   </div>
                 );
               })}
