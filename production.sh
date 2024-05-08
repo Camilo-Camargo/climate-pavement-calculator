@@ -12,7 +12,7 @@ mkdir $PRODUCTION_DIR/$CORE_OUT_DIR
 
 pushd $WEB_DIR
   yarn install
-  yarn run build
+  ENV=prod yarn run build
   mv build/client $PRODUCTION_DIR/$CORE_OUT_DIR/public
 popd
 
