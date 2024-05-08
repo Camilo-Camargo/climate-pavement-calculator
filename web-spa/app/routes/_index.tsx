@@ -22,7 +22,7 @@ type ClimatePavimentReqDTO = {
 const lang = 'es';
 
 const SPANISH_TEXT = {
-  'title': 'Variación de la resistencia de capas de pavimentos por efecto del clima',
+  'title': 'Variación de la resistencia de capas no ligadas de pavimentos por efecto del clima',
   'description': 'Variación de la resistencia de capas de pavimentos por efecto del clima',
   'mode': 'modo',
   'calculate': 'Calcular',
