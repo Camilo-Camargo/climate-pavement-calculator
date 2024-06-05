@@ -1,4 +1,5 @@
 # Climate Pavement Calculator
+Climate Pavement Calculator is a tool designed to calculate geotechnical and climatic parameters relevant to pavement design. It utilizes FastAPI for the main API and Remix JS for the web interface.
 
 ## Getting started
 
